@@ -1,6 +1,7 @@
 <script>
 	import ArrowRight from 'lucide-svelte/icons/arrow-right';
 	import { fade } from 'svelte/transition';
+	import { reveal } from '$lib/actions/reveal.js';
 
 	const featuredProducts = [
 		{ name: 'The Artisan Dining Table', price: '$2,850', image: '/images/featured_table_1777377005792.png', slug: 'artisan-dining-table' },
@@ -49,8 +50,8 @@
 		</div>
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-			{#each featuredProducts as product}
-				<a href={`/shop/${product.slug}`} class="group block">
+			{#each featuredProducts as product, i}
+				<a href={`/shop/${product.slug}`} class="group block" use:reveal={{ delay: i * 200 }}>
 					<div class="aspect-[4/5] overflow-hidden bg-brand-800 mb-6 relative">
 						<img 
 							src={product.image} 
@@ -78,7 +79,7 @@
 				</p>
 				
 				<div class="space-y-10">
-					<div class="flex">
+					<div class="flex" use:reveal>
 						<div class="flex-shrink-0 mt-1">
 							<span class="flex items-center justify-center h-8 w-8 rounded-full border border-brand-400 text-brand-300 text-sm font-serif">1</span>
 						</div>
@@ -87,7 +88,7 @@
 							<p class="text-brand-300 font-light">Selecting the perfect grain and making the precise initial cuts to define the structure.</p>
 						</div>
 					</div>
-					<div class="flex">
+					<div class="flex" use:reveal={{ delay: 200 }}>
 						<div class="flex-shrink-0 mt-1">
 							<span class="flex items-center justify-center h-8 w-8 rounded-full border border-brand-400 text-brand-300 text-sm font-serif">2</span>
 						</div>
@@ -96,7 +97,7 @@
 							<p class="text-brand-300 font-light">Assembling with traditional joinery techniques ensuring structural integrity for generations.</p>
 						</div>
 					</div>
-					<div class="flex">
+					<div class="flex" use:reveal={{ delay: 400 }}>
 						<div class="flex-shrink-0 mt-1">
 							<span class="flex items-center justify-center h-8 w-8 rounded-full border border-brand-400 text-brand-300 text-sm font-serif">3</span>
 						</div>
@@ -107,7 +108,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="relative h-[600px] hidden lg:block">
+			<div class="relative h-[600px] hidden lg:block" use:reveal={{ delay: 300, threshold: 0.3 }}>
 				<img src="/images/custom_process_1777377461481.png" alt="Craftsmanship process" class="absolute inset-0 w-full h-full object-cover shadow-2xl opacity-80" />
 			</div>
 		</div>
@@ -119,7 +120,7 @@
 	<div class="max-w-7xl mx-auto px-6 lg:px-8">
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-16">
 			<!-- About Preview -->
-			<a href="/about" class="group block">
+			<a href="/about" class="group block" use:reveal>
 				<div class="aspect-video overflow-hidden mb-8 relative">
 					<img src="/images/workshop_portrait_1777377708850.png" alt="The Builder" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 opacity-80" />
 					<div class="absolute inset-0 bg-brand-900/40 group-hover:bg-brand-900/20 transition-colors duration-500"></div>
@@ -134,7 +135,7 @@
 			</a>
 
 			<!-- Custom Teaser -->
-			<div class="bg-brand-800 p-12 flex flex-col justify-center items-start border border-brand-700 hover:border-brand-500 transition-colors duration-300">
+			<div class="bg-brand-800 p-12 flex flex-col justify-center items-start border border-brand-700 hover:border-brand-500 transition-colors duration-300" use:reveal={{ delay: 200 }}>
 				<h3 class="text-3xl font-serif text-brand-100 mb-4">Have something in mind?</h3>
 				<p class="text-brand-200 mb-10 font-light leading-relaxed text-lg">
 					We specialize in bespoke commissions tailored to your specific space and aesthetic needs. Let's build your dream piece together.

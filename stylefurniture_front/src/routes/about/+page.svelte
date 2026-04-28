@@ -1,5 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
+	import { reveal } from '$lib/actions/reveal.js';
 </script>
 
 <svelte:head>
@@ -18,7 +19,7 @@
 		</div>
 
 		<!-- The Story -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 mb-32" in:fade={{duration: 800, delay: 200}}>
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 mb-32" use:reveal={{ delay: 100 }}>
 			<div class="aspect-[4/5] bg-brand-800 overflow-hidden relative border border-brand-800">
 				<img 
 					src="/images/workshop_portrait_1777377708850.png" 
@@ -44,7 +45,7 @@
 		</div>
 
 		<!-- Workshop Visuals -->
-		<div class="mb-24" in:fade={{duration: 800, delay: 400}}>
+		<div class="mb-24" use:reveal={{ delay: 200, threshold: 0.2 }}>
 			<h2 class="text-3xl font-serif text-brand-100 mb-12 text-center">Inside the Workshop</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 				<div class="aspect-video bg-brand-800 overflow-hidden relative">
@@ -68,19 +69,19 @@
 		<div class="bg-brand-800 border border-brand-700 p-12 lg:p-16 text-center">
 			<h2 class="text-3xl font-serif text-brand-100 mb-12">Our Philosophy</h2>
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-				<div>
+				<div use:reveal>
 					<h3 class="text-lg font-medium text-brand-100 uppercase tracking-widest text-sm mb-4">Material First</h3>
 					<p class="text-brand-300 font-light text-sm leading-relaxed">
 						We select lumber not just for stability, but for character. We celebrate the natural imperfections and unique grain patterns of every board.
 					</p>
 				</div>
-				<div>
+				<div use:reveal={{ delay: 200 }}>
 					<h3 class="text-lg font-medium text-brand-100 uppercase tracking-widest text-sm mb-4">Honest Joinery</h3>
 					<p class="text-brand-300 font-light text-sm leading-relaxed">
 						No hidden screws or shortcuts. We use traditional mortise and tenon, dovetail, and half-lap joints that are designed to last lifetimes.
 					</p>
 				</div>
-				<div>
+				<div use:reveal={{ delay: 400 }}>
 					<h3 class="text-lg font-medium text-brand-100 uppercase tracking-widest text-sm mb-4">Timeless Form</h3>
 					<p class="text-brand-300 font-light text-sm leading-relaxed">
 						We avoid fleeting trends, focusing instead on clean, architectural lines and proportions that will look just as relevant in fifty years as they do today.
