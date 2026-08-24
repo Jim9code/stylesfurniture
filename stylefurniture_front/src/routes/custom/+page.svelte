@@ -5,17 +5,83 @@
 	import PenTool from 'lucide-svelte/icons/pen-tool';
 	import Hammer from 'lucide-svelte/icons/hammer';
 
+	// Configurable Contact Defaults
+	const BUILDER_EMAIL = "Jethwork4@gmail.com";
+	const BUILDER_WHATSAPP = "2348132900368";
+
 	let formState = $state({
+		name: '',
+		email: '',
+		phone: '',
 		type: '',
 		size: '',
+		style: '',
 		budget: '',
 		details: ''
 	});
 
-	function handleSubmit(e) {
+	let isSubmitting = $state(false);
+	let isSubmitted = $state(false);
+	let errorMessage = $state('');
+
+	async function handleSubmit(e) {
 		e.preventDefault();
-		// Form submission logic would go here
-		alert("Thank you for your inquiry. We will be in touch shortly.");
+		
+		if (!formState.name || !formState.email) {
+			errorMessage = "Name and Email are required fields.";
+			return;
+		}
+
+		isSubmitting = true;
+		errorMessage = '';
+
+		try {
+			const response = await fetch(`https://formsubmit.co/ajax/${BUILDER_EMAIL}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				},
+				body: JSON.stringify({
+					"Client Name": formState.name,
+					"Email Address": formState.email,
+					"Phone Number": formState.phone || "Not Provided",
+					"Furniture Type": formState.type || "Not Specified",
+					"Estimated Size": formState.size || "Not Specified",
+					"Preferred Wood / Style": formState.style || "Not Specified",
+					"Estimated Budget": formState.budget || "Not Specified",
+					"Project Details": formState.details || "Not Specified",
+					"_subject": `New Bespoke Commission Request from ${formState.name}`,
+					"_replyto": formState.email
+				})
+			});
+
+			if (response.ok) {
+				isSubmitted = true;
+			} else {
+				const result = await response.json();
+				errorMessage = result.message || "Failed to send your inquiry. Please try again.";
+			}
+		} catch (err) {
+			console.error(err);
+			errorMessage = "A network error occurred. Please check your internet connection and try again.";
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	function getWhatsAppLink() {
+		const text = `Hello! I would like to request a custom furniture commission:
+- Name: ${formState.name}
+- Email: ${formState.email}
+- Phone: ${formState.phone || 'Not Provided'}
+- Furniture Type: ${formState.type || 'Not Specified'}
+- Size: ${formState.size || 'Not Specified'}
+- Wood/Style: ${formState.style || 'Not Specified'}
+- Budget: ${formState.budget || 'Not Specified'}
+- Details: ${formState.details || 'Not Specified'}`;
+
+		return `https://api.whatsapp.com/send?phone=${BUILDER_WHATSAPP}&text=${encodeURIComponent(text)}`;
 	}
 </script>
 
@@ -90,38 +156,97 @@
 			</div>
 		</div>
 
-		<!-- Request Form -->
+		<!-- Request Form / Success View -->
 		<div class="max-w-3xl mx-auto bg-brand-800 p-8 md:p-12 border border-brand-700">
-			<h2 class="text-3xl font-serif text-brand-100 mb-2">Start a Project</h2>
-			<p class="text-brand-300 font-light mb-10">Fill out the form below and we'll get back to you within 48 hours to discuss your piece.</p>
-			
-			<form class="space-y-8" onsubmit={handleSubmit}>
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-					<!-- Furniture Type -->
-					<div>
-						<label for="type" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Furniture Type</label>
-						<select id="type" bind:value={formState.type} class="block w-full bg-brand-900 border-brand-700 text-brand-100 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4">
-							<option value="">Select a type...</option>
-							<option value="table">Dining / Coffee Table</option>
-							<option value="seating">Chair / Bench</option>
-							<option value="storage">Cabinet / Bookshelf</option>
-							<option value="bed">Bed Frame</option>
-							<option value="other">Other</option>
-						</select>
+			{#if isSubmitted}
+				<div class="text-center py-8 space-y-6" in:fade>
+					<div class="w-16 h-16 mx-auto bg-emerald-950/30 border border-emerald-500/30 rounded-full flex items-center justify-center text-emerald-400">
+						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
 					</div>
-
-					<!-- Estimated Size -->
-					<div>
-						<label for="size" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Estimated Size</label>
-						<input type="text" id="size" bind:value={formState.size} placeholder="e.g., 8ft x 4ft" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+					<h2 class="text-3xl font-serif text-brand-100">Inquiry Received</h2>
+					<p class="text-brand-300 font-light max-w-lg mx-auto leading-relaxed">
+						Thank you, <strong class="text-brand-100">{formState.name}</strong>. Your custom commission inquiry has been sent to the builder's email (<strong class="text-brand-200">{BUILDER_EMAIL}</strong>).
+					</p>
+					
+					<div class="pt-6 border-t border-brand-700/50 space-y-4">
+						<p class="text-sm text-brand-400 font-light">
+							Would you also like to send this request directly via WhatsApp for a faster response?
+						</p>
+						<div class="flex flex-col sm:flex-row justify-center gap-4">
+							<a 
+								href={getWhatsAppLink()} 
+								target="_blank" 
+								rel="noopener noreferrer"
+								class="inline-flex justify-center items-center px-8 py-4 bg-emerald-700 hover:bg-emerald-600 text-white font-medium tracking-widest uppercase text-xs transition-colors duration-300"
+							>
+								Send via WhatsApp
+							</a>
+							<button 
+								onclick={() => { isSubmitted = false; formState = { name: '', email: '', phone: '', type: '', size: '', style: '', budget: '', details: '' }; }}
+								class="inline-flex justify-center items-center px-8 py-4 border border-brand-300 text-brand-100 hover:bg-brand-300 hover:text-brand-900 transition-all duration-300 text-xs tracking-widest uppercase font-medium"
+							>
+								Submit Another
+							</button>
+						</div>
 					</div>
 				</div>
+			{:else}
+				<h2 class="text-3xl font-serif text-brand-100 mb-2">Start a Project</h2>
+				<p class="text-brand-300 font-light mb-10">Fill out the form below and we'll get back to you within 48 hours to discuss your piece.</p>
+				
+				{#if errorMessage}
+					<div class="mb-8 p-4 bg-red-950/50 border border-red-500/30 text-red-300 text-sm font-light rounded-none">
+						{errorMessage}
+					</div>
+				{/if}
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-					<!-- Style / Material Ref -->
-					<div>
-						<label for="style" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Preferred Wood / Style</label>
-						<input type="text" id="style" placeholder="e.g., Walnut, Mid-Century" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+				<form class="space-y-8" onsubmit={handleSubmit}>
+					<!-- Name and Email -->
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+						<div>
+							<label for="name" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Your Name *</label>
+							<input type="text" id="name" required bind:value={formState.name} placeholder="John Doe" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+						</div>
+
+						<div>
+							<label for="email_field" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Email Address *</label>
+							<input type="email" id="email_field" required bind:value={formState.email} placeholder="john@example.com" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+						<!-- Phone Number -->
+						<div>
+							<label for="phone" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Phone Number (Optional)</label>
+							<input type="tel" id="phone" bind:value={formState.phone} placeholder="+1 (555) 000-0000" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+						</div>
+
+						<!-- Furniture Type -->
+						<div>
+							<label for="type" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Furniture Type</label>
+							<select id="type" bind:value={formState.type} class="block w-full bg-brand-900 border-brand-700 text-brand-100 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4">
+								<option value="">Select a type...</option>
+								<option value="table">Dining / Coffee Table</option>
+								<option value="seating">Chair / Bench</option>
+								<option value="storage">Cabinet / Sideboard</option>
+								<option value="bed">Bed Frame</option>
+								<option value="other">Other</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+						<!-- Estimated Size -->
+						<div>
+							<label for="size" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Estimated Size</label>
+							<input type="text" id="size" bind:value={formState.size} placeholder="e.g., 8ft x 4ft" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+						</div>
+
+						<!-- Style / Material Ref -->
+						<div>
+							<label for="style" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Preferred Wood / Style</label>
+							<input type="text" id="style" bind:value={formState.style} placeholder="e.g., Walnut, Mid-Century" class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4" />
+						</div>
 					</div>
 
 					<!-- Budget -->
@@ -135,20 +260,25 @@
 							<option value="10k+">$10,000+</option>
 						</select>
 					</div>
-				</div>
 
-				<!-- Details -->
-				<div>
-					<label for="details" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Project Details</label>
-					<textarea id="details" bind:value={formState.details} rows="4" placeholder="Tell us more about what you're looking for..." class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4"></textarea>
-				</div>
+					<!-- Details -->
+					<div>
+						<label for="details" class="block text-sm font-medium tracking-widest uppercase text-brand-400 mb-2">Project Details</label>
+						<textarea id="details" bind:value={formState.details} rows="4" placeholder="Tell us more about what you're looking for..." class="block w-full bg-brand-900 border-brand-700 text-brand-100 placeholder-brand-600 focus:ring-brand-500 focus:border-brand-500 rounded-none py-3 px-4"></textarea>
+					</div>
 
-				<button type="submit" class="w-full flex justify-center items-center px-8 py-4 border border-transparent text-sm font-medium tracking-widest uppercase text-brand-900 bg-brand-200 hover:bg-white transition-colors duration-300">
-					Submit Inquiry
-					<ArrowRight size={16} class="ml-2" />
-				</button>
-			</form>
+					<button type="submit" disabled={isSubmitting} class="w-full flex justify-center items-center px-8 py-4 border border-transparent text-sm font-medium tracking-widest uppercase text-brand-900 bg-brand-200 hover:bg-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+						{#if isSubmitting}
+							Sending Inquiry...
+						{:else}
+							Submit Inquiry
+							<ArrowRight size={16} class="ml-2" />
+						{/if}
+					</button>
+				</form>
+			{/if}
 		</div>
 
 	</div>
 </section>
+

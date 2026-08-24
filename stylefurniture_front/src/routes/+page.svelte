@@ -19,12 +19,12 @@
 	// Horizontal marquee cards data
 	const marqueeCards = [
 		{ name: 'The Artisan Dining Table', category: 'Tables', image: '/images/featured_table_1777377005792.png', link: '/shop/artisan-dining-table' },
-		{ name: 'Curve Accent Chair', category: 'Seating', image: '/images/featured_chair_1777377229474.png', link: '/shop/curve-accent-chair' },
+		{ name: 'Curve Accent Chair', category: 'Chairs', image: '/images/featured_chair_1777377229474.png', link: '/shop/curve-accent-chair' },
 		{ name: 'Minimalist Storage Cabinet', category: 'Storage', image: '/images/featured_cabinet_1777377410841.png', link: '/shop/minimalist-storage-cabinet' },
-		{ name: 'Artisan Lounge Chair', category: 'Seating', image: '/images/lounge_chair.jpg', link: '/shop' },
-		{ name: 'Walnut Sideboard Cabinet', category: 'Storage', image: '/images/walnut_sideboard.jpg', link: '/shop' },
-		{ name: 'Bespoke Oak Bed Frame', category: 'Bedroom', image: '/images/bed_frame.jpg', link: '/shop' },
-		{ name: 'Minimalist TV Wall Stand', category: 'Living Room', image: '/images/tv_stand.jpg', link: '/shop' }
+		{ name: 'Artisan Lounge Chair', category: 'Chairs', image: '/images/lounge_chair.jpg', link: '/shop/artisan-lounge-chair' },
+		{ name: 'Walnut Sideboard Cabinet', category: 'Storage', image: '/images/walnut_sideboard.jpg', link: '/shop/walnut-sideboard-cabinet' },
+		{ name: 'Bespoke Oak Bed Frame', category: 'Beds', image: '/images/bed_frame.jpg', link: '/shop/bespoke-oak-bed-frame' },
+		{ name: 'Minimalist TV Wall Stand', category: 'Living Room', image: '/images/tv_stand.jpg', link: '/shop/minimalist-tv-wall-stand' }
 	];
 
 	onMount(() => {

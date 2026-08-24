@@ -1,5 +1,4 @@
 <script>
-	import ArrowRight from 'lucide-svelte/icons/arrow-right';
 	import Mail from 'lucide-svelte/icons/mail';
 	import Phone from 'lucide-svelte/icons/phone';
 	import MapPin from 'lucide-svelte/icons/map-pin';
@@ -7,7 +6,7 @@
 
 <footer class="bg-brand-900 text-brand-200 border-t border-brand-800">
 	<div class="max-w-7xl mx-auto px-6 py-16 lg:px-8">
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8">
 			
 			<!-- Brand -->
 			<div class="space-y-6">
@@ -59,28 +58,6 @@
 				</ul>
 			</div>
 
-			<!-- Quick Form -->
-			<div>
-				<h3 class="text-sm font-semibold text-brand-100 tracking-wider uppercase mb-6">Quick Inquiry</h3>
-				<form class="space-y-3" onsubmit={(e) => e.preventDefault()}>
-					<div>
-						<label for="email" class="sr-only">Email address</label>
-						<input 
-							type="email" 
-							id="email" 
-							placeholder="Your email" 
-							class="block w-full bg-brand-800 border-brand-700 rounded-none text-brand-100 placeholder-brand-500 focus:ring-brand-500 focus:border-brand-500 sm:text-sm px-4 py-3"
-						/>
-					</div>
-					<button 
-						type="submit" 
-						class="w-full flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-none text-brand-900 bg-brand-200 hover:bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 focus:ring-offset-brand-900"
-					>
-						Send Message
-						<ArrowRight size={16} class="ml-2" />
-					</button>
-				</form>
-			</div>
 		</div>
 		
 		<div class="mt-16 pt-8 border-t border-brand-800 flex flex-col md:flex-row justify-between items-center">
