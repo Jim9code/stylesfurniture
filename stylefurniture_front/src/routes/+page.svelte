@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	import ArrowRight from 'lucide-svelte/icons/arrow-right';
 	import { fade } from 'svelte/transition';
 	import { reveal } from '$lib/actions/reveal.js';
@@ -8,6 +9,56 @@
 		{ name: 'Curve Accent Chair', price: '$850', image: '/images/featured_chair_1777377229474.png', slug: 'curve-accent-chair' },
 		{ name: 'Minimalist Storage Cabinet', price: '$3,200', image: '/images/featured_cabinet_1777377410841.png', slug: 'minimalist-storage-cabinet' },
 	];
+
+	// Typing animation words and state
+	const words = ['last.', 'endure.', 'inspire.', 'cherish.'];
+	let currentWordIndex = $state(0);
+	let currentText = $state('');
+	let isDeleting = $state(false);
+
+	// Horizontal marquee cards data
+	const marqueeCards = [
+		{ name: 'The Artisan Dining Table', category: 'Tables', image: '/images/featured_table_1777377005792.png', link: '/shop/artisan-dining-table' },
+		{ name: 'Curve Accent Chair', category: 'Seating', image: '/images/featured_chair_1777377229474.png', link: '/shop/curve-accent-chair' },
+		{ name: 'Minimalist Storage Cabinet', category: 'Storage', image: '/images/featured_cabinet_1777377410841.png', link: '/shop/minimalist-storage-cabinet' },
+		{ name: 'Artisan Lounge Chair', category: 'Seating', image: '/images/lounge_chair.jpg', link: '/shop' },
+		{ name: 'Walnut Sideboard Cabinet', category: 'Storage', image: '/images/walnut_sideboard.jpg', link: '/shop' },
+		{ name: 'Bespoke Oak Bed Frame', category: 'Bedroom', image: '/images/bed_frame.jpg', link: '/shop' },
+		{ name: 'Minimalist TV Wall Stand', category: 'Living Room', image: '/images/tv_stand.jpg', link: '/shop' }
+	];
+
+	onMount(() => {
+		let timer;
+		let typingSpeed = 150;
+
+		function tick() {
+			const fullWord = words[currentWordIndex];
+			if (isDeleting) {
+				currentText = fullWord.substring(0, currentText.length - 1);
+				typingSpeed = 75; // Deleting characters is faster
+			} else {
+				currentText = fullWord.substring(0, currentText.length + 1);
+				typingSpeed = 150; // Typing characters speed
+			}
+
+			if (!isDeleting && currentText === fullWord) {
+				isDeleting = true;
+				typingSpeed = 2000; // Pause at the complete word
+			} else if (isDeleting && currentText === '') {
+				isDeleting = false;
+				currentWordIndex = (currentWordIndex + 1) % words.length;
+				typingSpeed = 500; // Pause before typing the next word
+			}
+
+			timer = setTimeout(tick, typingSpeed);
+		}
+
+		tick();
+
+		return () => {
+			clearTimeout(timer);
+		};
+	});
 </script>
 
 <svelte:head>
@@ -15,7 +66,7 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="relative h-screen flex items-center justify-center overflow-hidden -mt-20">
+<section class="relative min-h-screen md:h-screen flex flex-col justify-between overflow-hidden -mt-20 pt-28 pb-10">
 	<div class="absolute inset-0 z-0">
 		<img 
 			src="/images/hero_workshop_1777376979432.png" 
@@ -25,16 +76,49 @@
 		<div class="absolute inset-0 bg-gradient-to-b from-brand-900/50 via-transparent to-brand-900"></div>
 	</div>
 	
-	<div class="relative z-10 text-center px-6 max-w-4xl mx-auto mt-20" in:fade={{duration: 1000, delay: 600}}>
-		<h1 class="text-5xl md:text-7xl font-serif text-brand-50 mb-6 tracking-tight leading-tight">
-			Built by hand.<br/><span class="text-brand-300 italic">Made to last.</span>
-		</h1>
-		<p class="text-lg md:text-xl text-brand-200 mb-10 max-w-2xl mx-auto font-light tracking-wide">
-			Premium, bespoke wooden furniture crafted with passion and precision.
-		</p>
-		<a href="/shop" class="inline-flex items-center px-8 py-4 border border-brand-300 text-brand-100 hover:bg-brand-300 hover:text-brand-900 transition-all duration-300 text-sm tracking-widest uppercase font-medium">
-			Explore the Collection
-		</a>
+	<!-- Center Content -->
+	<div class="relative z-10 text-center px-6 max-w-4xl mx-auto flex-grow flex flex-col justify-center" in:fade={{duration: 1000, delay: 600}}>
+		<div class="my-auto">
+			<h1 class="text-5xl md:text-7xl font-serif text-brand-50 mb-6 tracking-tight leading-tight min-h-[120px] md:min-h-[170px]">
+				Built by hand.<br/>
+				<span class="text-brand-300 italic">Made to {currentText}</span>
+				<span class="cursor-blink text-brand-300 font-light select-none">|</span>
+			</h1>
+			<p class="text-lg md:text-xl text-brand-200 mb-8 max-w-2xl mx-auto font-light tracking-wide">
+				Premium, bespoke wooden furniture crafted with passion and precision.
+			</p>
+			<div>
+				<a href="/shop" class="inline-flex items-center px-8 py-4 border border-brand-300 text-brand-100 hover:bg-brand-300 hover:text-brand-900 transition-all duration-300 text-sm tracking-widest uppercase font-medium">
+					Explore the Collection
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bottom Marquee (integrated inside Hero container) -->
+	<div class="relative z-10 w-full mt-auto">
+		<div class="marquee-container relative">
+			<!-- Fade gradient masks for smooth entry and exit -->
+			<div class="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-brand-900 to-transparent z-20 pointer-events-none"></div>
+			<div class="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-brand-900 to-transparent z-20 pointer-events-none"></div>
+			
+			<div class="marquee-track flex gap-6">
+				{#each [...marqueeCards, ...marqueeCards] as card}
+					<a href={card.link} class="block relative w-36 md:w-52 aspect-[4/3] overflow-hidden bg-brand-800/40 border border-brand-800/20 group rounded-xs shadow-md">
+						<img 
+							src={card.image} 
+							alt={card.name} 
+							class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90 group-hover:opacity-100"
+						/>
+						<div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/20 to-transparent opacity-85 group-hover:opacity-70 transition-opacity duration-500"></div>
+						<div class="absolute bottom-0 left-0 right-0 p-3 md:p-4 z-10 transform translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+							<span class="text-[9px] md:text-[10px] uppercase tracking-widest text-brand-300 font-medium">{card.category}</span>
+							<h3 class="text-xs md:text-sm font-serif text-brand-100 mt-0.5">{card.name}</h3>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</div>
 	</div>
 </section>
 
@@ -147,3 +231,40 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.cursor-blink {
+		display: inline-block;
+		animation: cursor-blink-ani 0.8s infinite;
+	}
+
+	@keyframes cursor-blink-ani {
+		0%, 100% { opacity: 0; }
+		50% { opacity: 1; }
+	}
+
+	.marquee-container {
+		width: 100%;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.marquee-track {
+		display: flex;
+		width: max-content;
+		animation: marquee-ani 35s linear infinite;
+	}
+
+	.marquee-track:hover {
+		animation-play-state: paused;
+	}
+
+	@keyframes marquee-ani {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
+	}
+</style>
